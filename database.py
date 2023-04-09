@@ -1,43 +1,55 @@
 import datetime
 
 class DataBase():
-    def __init__(self, nome_arquivo):
-        self.nome_arquivo = nome_arquivo
-        self.usuarios = None
-        self.arquivo = None
+    def __init__(self, filename):
+        self.filename = filename
+        self.users = None
+        self.file = None
         self.load()
         
+        
     def load(self):
-        self.arquivo = open(self.nome_arquivo, "r")
-        self.usuarios = {}
+        '''Cria os usuarios apartir do users.txt'''
+        self.file = open(self.filename, "r")
+        self.users = {}
         
-        for linha in self.arquivo:
-            email, senha, nome, criado_em= linha.strip().split(";")
-            self.usuarios[email] = (senha, nome, criado_em)
+        for line in self.file:
+            email, password, name, created= line.strip().split(";")
+            self.users[email] = (password, name, created)
             
-        self.arquivo.close()
+        self.file.close()
         
-    def pegar_usuario(self, email):
-        if email in self.usuarios:
-            return self.usuaios[email]
+        
+    def get_user(self, email):
+        if email in self.users:
+            return self.users[email]
         else:
             return -1
         
-    def validar(self, email, senha, nome):
-        if email.strip() not in self.usuarios:
-            self.usuarios[email.strip()] = (senha.strip(), nome.strip(), DataBase.get_date())
-            self.salvar()
+        
+    def add_user(self, email, password, name):
+        if email.strip() not in self.users:
+            self.users[email.strip()] = (password.strip(), name.strip(), DataBase.get_date())
+            self.save()
             return 1
         else:
             print("Email ja existe!")
             return -1
-    
-    def salvar(self):
-        with open(self.arquivo, "w") as f:
-            for usuario in self.usuarios:
-                f.write(usuario + ";" + self.usuarios[usuario][0] + ";" + self.usuarios[usuario][1] + ";" + self[usuario][2] + "\n")
+            
+            
+    def validate(self, email, password):
+        if self.get_user(email) != -1:
+            return self.users[email][0] == password
+        else:
+            return False
+        
+        
+    def save(self):
+        with open(self.filename, "w") as f:
+            for user in self.users:
+                f.write(user + ";" + self.users[user][0] + ";" + self.users[user][1] + ";" + self.users[user][2] + "\n")
                 
     
     @staticmethod
-    def pegar_data():
+    def get_date():
         return str(datetime.datetime.now()).split(" ")[0]
